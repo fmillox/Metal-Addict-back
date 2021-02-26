@@ -6,6 +6,7 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=EventRepository::class)
@@ -16,26 +17,36 @@ class Event
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"list_reviews"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=10, unique=true)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $setlistId;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $venue;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $city;
 
     /**
      * @ORM\Column(type="date")
+     * 
+     * @Groups({"list_reviews"})
      */
     private $date;
 
@@ -52,12 +63,16 @@ class Event
     /**
      * @ORM\ManyToOne(targetEntity=Country::class)
      * @ORM\JoinColumn(nullable=false)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $country;
 
     /**
      * @ORM\ManyToOne(targetEntity=Band::class)
      * @ORM\JoinColumn(nullable=false)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $band;
 
@@ -71,11 +86,17 @@ class Event
      */
     private $pictures;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="events")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
         $this->reviews = new ArrayCollection();
         $this->pictures = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,6 +256,30 @@ class Event
                 $picture->setEvent(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        $this->users->removeElement($user);
 
         return $this;
     }

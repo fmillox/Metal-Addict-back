@@ -26,7 +26,17 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $faker = Factory::create();
+        $connection = $manager->getConnection();
+        $connection->query('SET foreign_key_checks = 0');
+        $connection->query('TRUNCATE TABLE picture');
+        $connection->query('TRUNCATE TABLE review');
+        $connection->query('TRUNCATE TABLE event_user');
+        $connection->query('TRUNCATE TABLE user');
+        $connection->query('TRUNCATE TABLE event');
+        $connection->query('TRUNCATE TABLE band');
+        $connection->query('TRUNCATE TABLE country');
+
+        $faker = Factory::create('fr_FR');
         $faker->addProvider(new MetalAddictProvider());
         $faker->seed('Metal Addict');
 
@@ -69,6 +79,10 @@ class AppFixtures extends Fixture
             $event->setDate(DateTime::createFromFormat('d-m-Y', $eventData['date']));
             $event->setBand($bands[random_int(0, count($bands) - 1)]);
             $event->setCountry($countries[random_int(0, count($countries) - 1)]);
+            shuffle($users);
+            for ($i = 0; $i < random_int(0, count($users) - 1); $i++) { 
+                $event->addUser($users[$i]);
+            }
             $manager->persist($event);
             $events[] = $event;
         }

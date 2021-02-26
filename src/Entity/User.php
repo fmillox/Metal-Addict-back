@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -19,6 +20,8 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"list_reviews"})
      */
     private $id;
 
@@ -40,6 +43,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=100)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $nickname;
 
@@ -50,6 +55,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
+     * 
+     * @Groups({"list_reviews"})
      */
     private $avatar;
 
@@ -73,11 +80,17 @@ class User implements UserInterface
      */
     private $pictures;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="users")
+     */
+    private $events;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
         $this->reviews = new ArrayCollection();
         $this->pictures = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -276,6 +289,33 @@ class User implements UserInterface
             if ($picture->getUser() === $this) {
                 $picture->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Event[]
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            $event->removeUser($this);
         }
 
         return $this;
