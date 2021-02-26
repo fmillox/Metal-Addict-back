@@ -2,23 +2,24 @@
 
 namespace App\Controller\Api;
 
-use App\Repository\EventRepository;
 use App\Repository\UserRepository;
+use App\Repository\EventRepository;
 use App\Repository\ReviewRepository;
+use App\Repository\PictureRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class ReviewController extends AbstractController
+class PictureController extends AbstractController
 {
     /**
-     * @Route("/api/review", name="api_review_list", methods={"GET"})
+     * @Route("/api/picture", name="api_picture_list", methods={"GET"})
      */
-    public function list(Request $request, EventRepository $eventRepository, UserRepository $userRepository, ReviewRepository $reviewRepository, SerializerInterface $serializer): Response
+    public function list(Request $request, ReviewRepository $reviewRepository, EventRepository $eventRepository, UserRepository $userRepository, PictureRepository $pictureRepository, SerializerInterface $serializer): Response
     {
-        $limit = trim($request->query->get('limit', ''));
+        $reviewId = trim($request->query->get('review', ''));
         $setlistId = trim($request->query->get('setlistId', ''));
         $userId = trim($request->query->get('user', ''));
         $order = strtoupper(trim($request->query->get('order', '')));
@@ -27,11 +28,15 @@ class ReviewController extends AbstractController
             return $this->json(['error' => 'order not a valid value'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        if (strlen($limit) > 0) {
-            if (!is_numeric($limit)) {
-                return $this->json(['error' => 'limit not a number'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (strlen($reviewId) > 0) {
+            if (!is_numeric($reviewId)) {
+                return $this->json(['error' => 'review not a number'], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-            $reviews = $reviewRepository->findBy([], ['createdAt' => $order], $limit);
+            $review = $reviewRepository->find($reviewId);
+            if (!$review) {
+                return $this->json(['error' => 'review not found'], Response::HTTP_NOT_FOUND);
+            }
+            $pictures = $pictureRepository->findBy(['event' => $review->getEvent()], ['createdAt' => $order]);
         } 
         
         elseif (strlen($setlistId) > 0) {
@@ -39,7 +44,7 @@ class ReviewController extends AbstractController
             if (!$event) {
                 return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
             }
-            $reviews = $reviewRepository->findBy(['event' => $event], ['createdAt' => $order]);
+            $pictures = $pictureRepository->findBy(['event' => $event], ['createdAt' => $order]);
         } 
         
         elseif (strlen($userId) > 0) {
@@ -50,14 +55,14 @@ class ReviewController extends AbstractController
             if (!$user) {
                 return $this->json(['error' => 'user not found'], Response::HTTP_NOT_FOUND);
             }
-            $reviews = $reviewRepository->findBy(['user' => $user], ['createdAt' => $order]);
+            $pictures = $pictureRepository->findBy(['user' => $user], ['createdAt' => $order]);
         } 
         
         else {
             return $this->json(['error' => 'parameters expected not found'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $json = $serializer->serialize($reviews, 'json', ['groups' => 'list_reviews']);
+        $json = $serializer->serialize($pictures, 'json', ['groups' => 'list_pictures']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
     }

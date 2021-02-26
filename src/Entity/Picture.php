@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PictureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PictureRepository::class)
@@ -14,11 +15,15 @@ class Picture
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"list_pictures"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=1000)
+     * 
+     * @Groups({"list_pictures"})
      */
     private $path;
 
@@ -41,6 +46,8 @@ class Picture
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="pictures")
      * @ORM\JoinColumn(nullable=false)
+     * 
+     * @Groups({"list_pictures"})
      */
     private $user;
 
