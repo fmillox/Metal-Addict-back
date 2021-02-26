@@ -45,4 +45,22 @@ class SetlistApi
 
     return json_decode($response->getContent(), true);
   }
+
+  public function findSetlist(string $setlistId)
+  {
+    $httpClient = HttpClient::create();
+    $response = $httpClient->request('GET', $this->baseUrl.'/setlist/'.$setlistId, [
+        'headers' => [
+            'Accept' => 'application/json',
+            'x-api-key' => $this->apiKey
+        ]
+    ]);
+    
+    $result = ['httpStatusCode' => $response->getStatusCode()];
+    if ($result['httpStatusCode'] === Response::HTTP_OK) {
+      $result = array_merge($result, json_decode($response->getContent(), true));
+    }
+
+    return $result;
+  }
 }

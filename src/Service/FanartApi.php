@@ -41,7 +41,7 @@ class FanartApi
     unset($content['name']);
     unset($content['mbid_id']);
     unset($content['albums']);
-    
+
     return $content;
   }
 }
