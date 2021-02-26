@@ -22,7 +22,7 @@ class MetalAddictProvider
       'musicbrainzId' => '65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab'
     ],
     [
-      'name' => 'Faith No More"',
+      'name' => 'Faith No More',
       'musicbrainzId' => 'b15ebd71-a252-417d-9e1c-3e6863da68f8'
     ]
   ];
