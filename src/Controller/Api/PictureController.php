@@ -17,7 +17,7 @@ class PictureController extends AbstractController
     /**
      * @Route("/api/picture", name="api_picture_list", methods={"GET"})
      */
-    public function list(Request $request, ReviewRepository $reviewRepository, EventRepository $eventRepository, UserRepository $userRepository, PictureRepository $pictureRepository, SerializerInterface $serializer): Response
+    public function listBy(Request $request, ReviewRepository $reviewRepository, EventRepository $eventRepository, UserRepository $userRepository, PictureRepository $pictureRepository, SerializerInterface $serializer): Response
     {
         $reviewId = trim($request->query->get('review', ''));
         $setlistId = trim($request->query->get('setlistId', ''));

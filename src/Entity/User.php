@@ -82,6 +82,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="users")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $events;
 

@@ -18,35 +18,35 @@ class Event
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=10, unique=true)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $setlistId;
 
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $venue;
 
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $city;
 
     /**
      * @ORM\Column(type="date")
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $date;
 
@@ -64,7 +64,7 @@ class Event
      * @ORM\ManyToOne(targetEntity=Country::class)
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $country;
 
@@ -72,7 +72,7 @@ class Event
      * @ORM\ManyToOne(targetEntity=Band::class)
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $band;
 

@@ -16,7 +16,7 @@ class ReviewController extends AbstractController
     /**
      * @Route("/api/review", name="api_review_list", methods={"GET"})
      */
-    public function list(Request $request, EventRepository $eventRepository, UserRepository $userRepository, ReviewRepository $reviewRepository, SerializerInterface $serializer): Response
+    public function listBy(Request $request, EventRepository $eventRepository, UserRepository $userRepository, ReviewRepository $reviewRepository, SerializerInterface $serializer): Response
     {
         $limit = trim($request->query->get('limit', ''));
         $setlistId = trim($request->query->get('setlistId', ''));

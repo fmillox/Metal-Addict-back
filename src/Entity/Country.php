@@ -16,14 +16,14 @@ class Country
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"list_events", "list_reviews"})
      */
     private $name;
 
