@@ -44,3 +44,7 @@ services:
             $baseUrl: '%fanartApiUrl%'
             $apiKey: '%fanartApiKey%'
 
+    App\Event\Listener\JWTCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
