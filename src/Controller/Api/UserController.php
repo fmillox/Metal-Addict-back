@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Repository\EventRepository;
 use App\Service\MyValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,23 @@ class UserController extends AbstractController
         }
 
         $json = $serializer->serialize($user, 'json', ['groups' => 'user']);
+
+        return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
+    }
+
+    /**
+     * @Route("/api/user/{setlistId<\w+>}", name="api_user_list", methods={"GET"})
+     */
+    public function listBySetlist(string $setlistId, EventRepository $eventRepository, SerializerInterface $serializer): Response
+    {
+        $event = $eventRepository->findOneBy(['setlistId' => $setlistId]);
+        if ($event === null) {
+            $users = [];
+        } else {
+            $users = $event->getUsers();
+        }
+
+        $json = $serializer->serialize($users, 'json', ['groups' => 'user']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
     }
