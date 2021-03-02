@@ -141,4 +141,21 @@ class ReviewController extends AbstractController
 
         return $this->json($review, Response::HTTP_OK, [], ['groups' => 'review']);
     }
+
+    /**
+     * @Route("/api/review/{id<\d+>}", name="api_review_delete", methods={"DELETE"})
+     */
+    public function delete(Review $review = null, EntityManagerInterface $entityManager): Response
+    {
+        if (!$review) {
+            return $this->json(['error' => 'review not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->denyAccessUnlessGranted('edit', $review->getUser());
+
+        $entityManager->remove($review);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'review deleted'], Response::HTTP_OK);
+    }
 }
