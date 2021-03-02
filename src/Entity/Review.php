@@ -44,7 +44,7 @@ class Review
      * @Assert\NotBlank
      * @Assert\Length(
      *      min = 50,
-     *      minMessage = "Your title name must be at least 50 characters long"
+     *      minMessage = "Your content name must be at least 50 characters long"
      * )
      */
     private $content;

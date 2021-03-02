@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ReviewController extends AbstractController
@@ -87,12 +88,12 @@ class ReviewController extends AbstractController
         $user = $this->getUser();
 
         $event = $eventRepository->findOneBy(['setlistId' => $setlistId]);
-        if ($event === null) {
+        if (!$event) {
             return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
         }
 
         $review = $reviewRepository->findOneBy(['user' => $user, 'event' => $event]);
-        if ($review !== null) {
+        if ($review) {
             return $this->json(['error' => 'review already created for the event by the user'], Response::HTTP_NOT_FOUND);
         }
 
@@ -116,5 +117,28 @@ class ReviewController extends AbstractController
             ],
             ['groups' => 'review']
         );
+    }
+
+    /**
+     * @Route("/api/review/{id<\d+>}", name="api_review_put_and_patch", methods={"PUT", "PATCH"})
+     */
+    public function putAndPatch(Review $review = null, Request $request, SerializerInterface $serializer, MyValidator $myValidator, EntityManagerInterface $entityManager): Response
+    {
+        if (!$review) {
+            return $this->json(['error' => 'review not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->denyAccessUnlessGranted('edit', $review->getUser());
+
+        $serializer->deserialize($request->getContent(), Review::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $review]);
+
+        $errors = $myValidator->validate($review);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $entityManager->flush();
+
+        return $this->json($review, Response::HTTP_OK, [], ['groups' => 'review']);
     }
 }
