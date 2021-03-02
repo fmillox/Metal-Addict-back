@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReviewRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReviewRepository::class)
@@ -24,6 +25,14 @@ class Review
      * @ORM\Column(type="string", length=255)
      * 
      * @Groups({"review"})
+     * 
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 255,
+     *      minMessage = "Your title name must be at least 3 characters long",
+     *      maxMessage = "Your title name cannot be longer than 255 characters"
+     * )
      */
     private $title;
 
@@ -31,6 +40,12 @@ class Review
      * @ORM\Column(type="text")
      * 
      * @Groups({"review"})
+     * 
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 50,
+     *      minMessage = "Your title name must be at least 50 characters long"
+     * )
      */
     private $content;
 

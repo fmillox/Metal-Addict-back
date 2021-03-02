@@ -3,9 +3,11 @@
 namespace App\Controller\Api;
 
 use App\Entity\Review;
+use App\Service\MyValidator;
 use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use App\Repository\ReviewRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -75,5 +77,44 @@ class ReviewController extends AbstractController
         $json = $serializer->serialize($review, 'json', ['groups' => 'review']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
+    }
+
+    /**
+     * @Route("/api/review/{setlistId<\w+>}", name="api_review_post", methods={"POST"})
+     */
+    public function post(string $setlistId, EventRepository $eventRepository, ReviewRepository $reviewRepository, Request $request, SerializerInterface $serializer, MyValidator $myValidator, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+
+        $event = $eventRepository->findOneBy(['setlistId' => $setlistId]);
+        if ($event === null) {
+            return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $review = $reviewRepository->findOneBy(['user' => $user, 'event' => $event]);
+        if ($review !== null) {
+            return $this->json(['error' => 'review already created for the event by the user'], Response::HTTP_NOT_FOUND);
+        }
+
+        $review = $serializer->deserialize($request->getContent(), Review::class, 'json');
+
+        $errors = $myValidator->validate($review);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $review->setEvent($event);
+        $review->setUser($user);
+        $entityManager->persist($review);
+        $entityManager->flush();
+
+        return $this->json(
+            $review,
+            Response::HTTP_CREATED,
+            [
+                'Location' => $this->generateUrl('api_review_show', ['id' => $review->getId()])
+            ],
+            ['groups' => 'review']
+        );
     }
 }

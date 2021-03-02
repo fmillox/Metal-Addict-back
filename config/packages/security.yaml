@@ -48,5 +48,6 @@ security:
         # - { path: ^/api, roles: ROLE_USER }
         - { path: ^/api/user, roles: IS_AUTHENTICATED_FULLY, methods: [PUT, PATCH] }
         - { path: ^/api/event, roles: IS_AUTHENTICATED_FULLY, methods: [POST] }
+        - { path: ^/api/review, roles: IS_AUTHENTICATED_FULLY, methods: [POST] }
         - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         

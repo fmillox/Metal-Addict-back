@@ -13,7 +13,7 @@ class MyValidator
     $this->validator = $validator;
   }
 
-  public function validate($entity, $constraints, $groups): array
+  public function validate($entity, $constraints = null, $groups = null): array
   {
     $errorsArray = [];
     $errors = $this->validator->validate($entity, $constraints, $groups);
