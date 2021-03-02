@@ -26,7 +26,17 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $faker = Factory::create();
+        $connection = $manager->getConnection();
+        $connection->query('SET foreign_key_checks = 0');
+        $connection->query('TRUNCATE TABLE picture');
+        $connection->query('TRUNCATE TABLE review');
+        $connection->query('TRUNCATE TABLE event_user');
+        $connection->query('TRUNCATE TABLE user');
+        $connection->query('TRUNCATE TABLE event');
+        $connection->query('TRUNCATE TABLE band');
+        $connection->query('TRUNCATE TABLE country');
+
+        $faker = Factory::create('fr_FR');
         $faker->addProvider(new MetalAddictProvider());
         $faker->seed('Metal Addict');
 
@@ -60,7 +70,7 @@ class AppFixtures extends Fixture
             $countries[] = $country;
         }
 
-        $events = [];
+        $pictures = $faker->getPictures();
         foreach ($faker->getEvents() as $eventData) {
             $event = new Event();
             $event->setSetlistId($eventData['setlistId']);
@@ -69,25 +79,27 @@ class AppFixtures extends Fixture
             $event->setDate(DateTime::createFromFormat('d-m-Y', $eventData['date']));
             $event->setBand($bands[random_int(0, count($bands) - 1)]);
             $event->setCountry($countries[random_int(0, count($countries) - 1)]);
+            shuffle($users);
+            for ($i = 0; $i < random_int(0, count($users)); $i++) { 
+                $event->addUser($users[$i]);
+                if (random_int(0, 1) === 1) {
+                    $review = new Review();
+                    $review->setTitle($faker->words(5, true));
+                    $review->setContent($faker->text());
+                    $review->setEvent($event);
+                    $review->setUser($users[$i]);
+                    $manager->persist($review);
+                }
+                shuffle($pictures);
+                for ($j = 0; $j < random_int(0, count($pictures)); $j++) {
+                    $picture = new Picture();
+                    $picture->setPath($pictures[$j]);
+                    $picture->setEvent($event);
+                    $picture->setUser($users[$i]);
+                    $manager->persist($picture);
+                }
+            }
             $manager->persist($event);
-            $events[] = $event;
-        }
-
-        for ($i = 1; $i < 20; $i++) { 
-            $review = new Review();
-            $review->setTitle($faker->words(5, true));
-            $review->setContent($faker->text());
-            $review->setEvent($events[random_int(0, count($events) - 1)]);
-            $review->setUser($users[random_int(0, count($users) - 1)]);
-            $manager->persist($review);
-        }
-
-        foreach ($faker->getPictures() as $path) {
-            $picture = new Picture();
-            $picture->setPath($path);
-            $picture->setEvent($events[random_int(0, count($events) - 1)]);
-            $picture->setUser($users[random_int(0, count($users) - 1)]);
-            $manager->persist($picture);
         }
 
         $manager->flush();

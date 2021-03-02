@@ -51,13 +51,13 @@ class MetalAddictProvider
   ];
 
   private $pictures = [
-    '/images/pictures/2021/02/26/01.jpg',
-    '/images/pictures/2021/02/26/02.jpg',
-    '/images/pictures/2021/02/26/03.jpg',
-    '/images/pictures/2021/02/26/04.jpg',
-    '/images/pictures/2021/02/26/05.jpg',
-    '/images/pictures/2021/02/26/06.jpg',
-    '/images/pictures/2021/02/26/07.jpg'
+    '/uploads/pictures/2021/02/26/01.jpg',
+    '/uploads/pictures/2021/02/26/02.jpg',
+    '/uploads/pictures/2021/02/26/03.jpg',
+    '/uploads/pictures/2021/02/26/04.jpg',
+    '/uploads/pictures/2021/02/26/05.jpg',
+    '/uploads/pictures/2021/02/26/06.jpg',
+    '/uploads/pictures/2021/02/26/07.jpg'
   ];
 
   private $events = [

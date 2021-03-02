@@ -8,10 +8,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity("email")
+ * 
+ * @UniqueEntity(
+ *      fields={"email"}, 
+ *      groups={"register", "update"}
+ * )
  */
 class User implements UserInterface
 {
@@ -19,11 +25,22 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"user", "picture", "review"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * 
+     * @Groups({"user"})
+     * 
+     * @Assert\NotBlank(
+     *      groups={"register", "update"}
+     * )
+     * @Assert\Email(
+     *      groups={"register", "update"}
+     * )
      */
     private $email;
 
@@ -35,21 +52,55 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * 
+     * @Assert\NotBlank(
+     *      groups={"register", "update"}
+     * )
+     * @Assert\Regex(
+     *      pattern="/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[#$@!%&*?]).{8,32}$/", 
+     *      groups={"register"}
+     * )
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * 
+     * @Groups({"user", "picture", "review"})
+     * 
+     * @Assert\NotBlank(
+     *      groups={"register", "update"}
+     * )
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 20,
+     *      minMessage = "Your nickname name must be at least 3 characters long",
+     *      maxMessage = "Your nickname name cannot be longer than 20 characters",
+     *      groups={"register", "update"}
+     * )
      */
     private $nickname;
 
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
+     * 
+     * @Groups({"user"})
+     * 
+     * @Assert\NotBlank(
+     *      groups={"update"}
+     * )
+     * @Assert\Length(
+     *      max = 500,
+     *      maxMessage = "Your nickname name cannot be longer than 20 characters",
+     *      groups={"update"}
+     * )
      */
     private $biography;
 
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
+     * 
+     * @Groups({"user", "picture", "review"})
      */
     private $avatar;
 
@@ -73,11 +124,18 @@ class User implements UserInterface
      */
     private $pictures;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="users")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     */
+    private $events;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
         $this->reviews = new ArrayCollection();
         $this->pictures = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -276,6 +334,33 @@ class User implements UserInterface
             if ($picture->getUser() === $this) {
                 $picture->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Event[]
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            $event->removeUser($this);
         }
 
         return $this;

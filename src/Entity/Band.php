@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\BandRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=BandRepository::class)
@@ -14,11 +15,15 @@ class Band
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"event", "review"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Groups({"event", "review"})
      */
     private $name;
 
