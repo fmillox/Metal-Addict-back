@@ -16,21 +16,21 @@ class Review
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"review"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"review"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"review"})
      */
     private $content;
 
@@ -48,7 +48,7 @@ class Review
      * @ORM\ManyToOne(targetEntity=Event::class, inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"review"})
      */
     private $event;
 
@@ -56,7 +56,7 @@ class Review
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="reviews")
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Groups({"list_reviews"})
+     * @Groups({"review"})
      */
     private $user;
 

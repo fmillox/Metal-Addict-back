@@ -62,7 +62,7 @@ class PictureController extends AbstractController
             return $this->json(['error' => 'parameters expected not found'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $json = $serializer->serialize($pictures, 'json', ['groups' => 'list_pictures']);
+        $json = $serializer->serialize($pictures, 'json', ['groups' => 'picture']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
     }

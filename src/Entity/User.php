@@ -26,7 +26,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups({"user", "list_pictures", "list_reviews"})
+     * @Groups({"user", "picture", "review"})
      */
     private $id;
 
@@ -66,7 +66,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=100)
      * 
-     * @Groups({"user", "list_pictures", "list_reviews"})
+     * @Groups({"user", "picture", "review"})
      * 
      * @Assert\NotBlank(
      *      groups={"register", "update"}
@@ -100,7 +100,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
      * 
-     * @Groups({"user", "list_pictures", "list_reviews"})
+     * @Groups({"user", "picture", "review"})
      */
     private $avatar;
 

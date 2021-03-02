@@ -16,14 +16,14 @@ class Picture
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups({"list_pictures"})
+     * @Groups({"picture"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=1000)
      * 
-     * @Groups({"list_pictures"})
+     * @Groups({"picture"})
      */
     private $path;
 
@@ -47,7 +47,7 @@ class Picture
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="pictures")
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Groups({"list_pictures"})
+     * @Groups({"picture"})
      */
     private $user;
 

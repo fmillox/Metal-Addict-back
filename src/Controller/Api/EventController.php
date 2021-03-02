@@ -45,7 +45,7 @@ class EventController extends AbstractController
             return $this->json(['error' => 'parameters expected not found'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $json = $serializer->serialize($events, 'json', ['groups' => 'list_events']);
+        $json = $serializer->serialize($events, 'json', ['groups' => 'event']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
     }

@@ -16,14 +16,14 @@ class Band
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups({"list_events", "list_reviews"})
+     * @Groups({"event", "review"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Groups({"list_events", "list_reviews"})
+     * @Groups({"event", "review"})
      */
     private $name;
 

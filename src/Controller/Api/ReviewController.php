@@ -2,14 +2,15 @@
 
 namespace App\Controller\Api;
 
-use App\Repository\EventRepository;
+use App\Entity\Review;
 use App\Repository\UserRepository;
+use App\Repository\EventRepository;
 use App\Repository\ReviewRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ReviewController extends AbstractController
 {
@@ -57,7 +58,21 @@ class ReviewController extends AbstractController
             return $this->json(['error' => 'parameters expected not found'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $json = $serializer->serialize($reviews, 'json', ['groups' => 'list_reviews']);
+        $json = $serializer->serialize($reviews, 'json', ['groups' => 'review']);
+
+        return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
+    }
+
+    /**
+     * @Route("/api/review/{id<\d+>}", name="api_review_show", methods={"GET"})
+     */
+    public function show(Review $review = null, SerializerInterface $serializer): Response
+    {
+        if (!$review) {
+            return $this->json(['error' => 'review not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $json = $serializer->serialize($review, 'json', ['groups' => 'review']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
     }
