@@ -70,7 +70,7 @@ class AppFixtures extends Fixture
             $countries[] = $country;
         }
 
-        $events = [];
+        $pictures = $faker->getPictures();
         foreach ($faker->getEvents() as $eventData) {
             $event = new Event();
             $event->setSetlistId($eventData['setlistId']);
@@ -80,28 +80,26 @@ class AppFixtures extends Fixture
             $event->setBand($bands[random_int(0, count($bands) - 1)]);
             $event->setCountry($countries[random_int(0, count($countries) - 1)]);
             shuffle($users);
-            for ($i = 0; $i < random_int(0, count($users) - 1); $i++) { 
+            for ($i = 0; $i < random_int(0, count($users)); $i++) { 
                 $event->addUser($users[$i]);
+                if (random_int(0, 1) === 1) {
+                    $review = new Review();
+                    $review->setTitle($faker->words(5, true));
+                    $review->setContent($faker->text());
+                    $review->setEvent($event);
+                    $review->setUser($users[$i]);
+                    $manager->persist($review);
+                }
+                shuffle($pictures);
+                for ($j = 0; $j < random_int(0, count($pictures)); $j++) {
+                    $picture = new Picture();
+                    $picture->setPath($pictures[$j]);
+                    $picture->setEvent($event);
+                    $picture->setUser($users[$i]);
+                    $manager->persist($picture);
+                }
             }
             $manager->persist($event);
-            $events[] = $event;
-        }
-
-        for ($i = 1; $i < 20; $i++) { 
-            $review = new Review();
-            $review->setTitle($faker->words(5, true));
-            $review->setContent($faker->text());
-            $review->setEvent($events[random_int(0, count($events) - 1)]);
-            $review->setUser($users[random_int(0, count($users) - 1)]);
-            $manager->persist($review);
-        }
-
-        foreach ($faker->getPictures() as $path) {
-            $picture = new Picture();
-            $picture->setPath($path);
-            $picture->setEvent($events[random_int(0, count($events) - 1)]);
-            $picture->setUser($users[random_int(0, count($users) - 1)]);
-            $manager->persist($picture);
         }
 
         $manager->flush();

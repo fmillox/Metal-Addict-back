@@ -8,6 +8,7 @@ parameters:
     setlistApiKey: '%env(SETLIST_API_KEY)%'
     fanartApiUrl: '%env(FANART_API_URL)%'
     fanartApiKey: '%env(FANART_API_KEY)%'
+    pictureDirectory: '%kernel.project_dir%/public/uploads'
     
 
 services:
@@ -43,6 +44,10 @@ services:
         arguments:
             $baseUrl: '%fanartApiUrl%'
             $apiKey: '%fanartApiKey%'
+
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%pictureDirectory%'
 
     App\Event\Listener\JWTCreatedListener:
         tags:

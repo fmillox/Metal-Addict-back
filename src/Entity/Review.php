@@ -51,6 +51,8 @@ class Review
 
     /**
      * @ORM\Column(type="datetime")
+     * 
+     * @Groups({"review"})
      */
     private $createdAt;
 

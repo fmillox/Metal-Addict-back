@@ -92,9 +92,13 @@ class ReviewController extends AbstractController
             return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
         }
 
+        if (!$event->getUsers()->contains($user)) {
+            return $this->json(['error' => 'event not associated to the user'], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
         $review = $reviewRepository->findOneBy(['user' => $user, 'event' => $event]);
         if ($review) {
-            return $this->json(['error' => 'review already created for the event by the user'], Response::HTTP_NOT_FOUND);
+            return $this->json(['error' => 'review already created for the event by the user'], Response::HTTP_NOT_ACCEPTABLE);
         }
 
         $review = $serializer->deserialize($request->getContent(), Review::class, 'json');

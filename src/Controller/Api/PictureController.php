@@ -2,14 +2,21 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Picture;
+use App\Service\FileUploader;
+use App\Service\ValidatorError;
 use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use App\Repository\ReviewRepository;
 use App\Repository\PictureRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PictureController extends AbstractController
@@ -65,5 +72,56 @@ class PictureController extends AbstractController
         $json = $serializer->serialize($pictures, 'json', ['groups' => 'picture']);
 
         return new Response($json, Response::HTTP_OK, ['content-type' => 'application/json']);
+    }
+
+    /**
+     * @Route("/api/picture/{setlistId<\w+>}", name="api_picture_add", methods={"POST"})
+     */
+    public function add(string $setlistId, EventRepository $eventRepository, Request $request, ValidatorError $validatorError, FileUploader $fileUploader, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    {
+        $user = $this->getUser();
+
+        $event = $eventRepository->findOneBy(['setlistId' => $setlistId]);
+        if (!$event) {
+            return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!$event->getUsers()->contains($user)) {
+            return $this->json(['error' => 'event not associated to the user'], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        $form = $this->createFormBuilder(null, ['csrf_protection' => false])
+            ->add('image', FileType::class, [
+                'constraints' => [
+                    new NotBlank(),
+                    new File([
+                        'maxSize' => '5M',
+                        'maxSizeMessage' => 'The file is too large. Allowed maximum size is 5M.',
+                        'mimeTypes' => [
+                            'image/png', 
+                            'image/jpeg', 
+                            'image/gif'
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image (png, jpeg or gif).'
+                    ]),
+                ],
+            ])
+            ->getForm();
+        $form->submit(['image' => $request->files->get('image')]);
+
+        if (!$form->isValid()) {
+            return $this->json(['error' => $validatorError->make($form->getErrors(true))], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        
+        $picture = new Picture();
+        $picture->setPath($fileUploader->upload($form->get('image')->getData(), 'pictures'));
+        $picture->setEvent($event);
+        $picture->setUser($user);
+        $entityManager->persist($picture);
+        $entityManager->flush();
+
+        $json = $serializer->serialize($picture, 'json', ['groups' => 'picture']);
+
+        return new Response($json, Response::HTTP_CREATED, ['content-type' => 'application/json']);
     }
 }
