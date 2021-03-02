@@ -46,6 +46,7 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
         # - { path: ^/api, roles: ROLE_USER }
-        # - { path: ^/api/user, roles: IS_AUTHENTICATED_FULLY, methods: [PUT, PATCH] }
+        - { path: ^/api/user, roles: IS_AUTHENTICATED_FULLY, methods: [PUT, PATCH] }
+        - { path: ^/api/event, roles: IS_AUTHENTICATED_FULLY, methods: [POST] }
         - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         
