@@ -40,10 +40,11 @@ class ReviewController extends AbstractController
         
         elseif (strlen($setlistId) > 0) {
             $event = $eventRepository->findBy(['setlistId' => $setlistId]);
-            if (!$event) {
-                return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
+            if ($event) {
+                $reviews = $reviewRepository->findBy(['event' => $event], ['createdAt' => $order]);
+            } else {
+                $reviews = [];
             }
-            $reviews = $reviewRepository->findBy(['event' => $event], ['createdAt' => $order]);
         } 
         
         elseif (strlen($userId) > 0) {

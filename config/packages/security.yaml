@@ -51,5 +51,5 @@ security:
         - { path: ^/api/event, roles: IS_AUTHENTICATED_FULLY, methods: [POST] }
         - { path: ^/api/review, roles: IS_AUTHENTICATED_FULLY, methods: [POST, PUT, PATCH, DELETE] }
         - { path: ^/api/picture, roles: IS_AUTHENTICATED_FULLY, methods: [POST] }
-        - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, roles: IS_ANONYMOUS }
         

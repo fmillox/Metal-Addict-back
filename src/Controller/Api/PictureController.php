@@ -48,10 +48,11 @@ class PictureController extends AbstractController
         
         elseif (strlen($setlistId) > 0) {
             $event = $eventRepository->findBy(['setlistId' => $setlistId]);
-            if (!$event) {
-                return $this->json(['error' => 'event not found'], Response::HTTP_NOT_FOUND);
+            if ($event) {
+                $pictures = $pictureRepository->findBy(['event' => $event], ['createdAt' => $order]);
+            } else {
+                $pictures = [];
             }
-            $pictures = $pictureRepository->findBy(['event' => $event], ['createdAt' => $order]);
         } 
         
         elseif (strlen($userId) > 0) {

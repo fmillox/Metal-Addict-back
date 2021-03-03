@@ -40,18 +40,6 @@ class AppFixtures extends Fixture
         $faker->addProvider(new MetalAddictProvider());
         $faker->seed('Metal Addict');
 
-        $users = [];
-        foreach ($faker->getUsers() as $userData) {
-            $user = new User();
-            $user->setEmail($userData['email']);
-            $user->setPassword($this->encoder->encodePassword($user, 'oMetal'));
-            $user->setRoles($userData['roles']);
-            $user->setNickname($userData['nickname']);
-            $user->setBiography($faker->words(20, true));
-            $manager->persist($user);
-            $users[] = $user;
-        }
-
         $bands = [];
         foreach ($faker->getBands() as $bandData) {
             $band = new Band();
@@ -68,6 +56,19 @@ class AppFixtures extends Fixture
             $country->setCountryCode($countryData['countryCode']);
             $manager->persist($country);
             $countries[] = $country;
+        }
+
+        /*
+        $users = [];
+        foreach ($faker->getUsers() as $userData) {
+            $user = new User();
+            $user->setEmail($userData['email']);
+            $user->setPassword($this->encoder->encodePassword($user, 'oMetal'));
+            $user->setRoles($userData['roles']);
+            $user->setNickname($userData['nickname']);
+            $user->setBiography($faker->words(20, true));
+            $manager->persist($user);
+            $users[] = $user;
         }
 
         $pictures = $faker->getPictures();
@@ -101,6 +102,7 @@ class AppFixtures extends Fixture
             }
             $manager->persist($event);
         }
+        */
 
         $manager->flush();
     }
