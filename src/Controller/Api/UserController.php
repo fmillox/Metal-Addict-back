@@ -36,15 +36,17 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/user/{setlistId<\w+>}", name="api_user_list", methods={"GET"})
+     * @Route("/api/user", name="api_user_list", methods={"GET"})
      */
-    public function listBySetlist(string $setlistId, EventRepository $eventRepository, SerializerInterface $serializer): Response
+    public function listBySetlist(Request $request, EventRepository $eventRepository, SerializerInterface $serializer): Response
     {
+        $setlistId = trim($request->query->get('setlistId', ''));
+
         $event = $eventRepository->findOneBy(['setlistId' => $setlistId]);
-        if ($event === null) {
-            $users = [];
-        } else {
+        if ($event) {
             $users = $event->getUsers();
+        } else {
+            $users = [];
         }
 
         $json = $serializer->serialize($users, 'json', ['groups' => 'user']);
@@ -153,8 +155,6 @@ class UserController extends AbstractController
         $user->setAvatar($fileUploader->upload($form->get('image')->getData(), 'avatars'));
         $entityManager->flush();
 
-        $json = $serializer->serialize($user, 'json', ['groups' => 'user']);
-
-        return new Response($json, Response::HTTP_CREATED, ['content-type' => 'application/json']);
+        return $this->json($user->getAvatar(), Response::HTTP_CREATED);
     }
 }
