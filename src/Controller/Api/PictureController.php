@@ -43,7 +43,7 @@ class PictureController extends AbstractController
             if (!$review) {
                 return $this->json(['error' => 'review not found'], Response::HTTP_NOT_FOUND);
             }
-            $pictures = $pictureRepository->findBy(['event' => $review->getEvent()], ['createdAt' => $order]);
+            $pictures = $pictureRepository->findBy(['event' => $review->getEvent(), 'user' => $review->getUser()], ['createdAt' => $order]);
         } 
         
         elseif (strlen($setlistId) > 0) {
